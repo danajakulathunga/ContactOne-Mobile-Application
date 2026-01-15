@@ -1,0 +1,94 @@
+# Project metadata
+name: contacts_app
+description: "A new Flutter project."
+
+# Prevent automatic publishing to pub.dev - remove if you want to publish
+publish_to: "none"
+
+# Version management
+# Format: major.minor.patch+build
+# Android uses versionName (1.0.0) and versionCode (1)
+# iOS uses CFBundleShortVersionString (1.0.0) and CFBundleVersion (1)
+version: 1.0.0+1
+
+# Dart SDK version constraint
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+# Production dependencies - packages required for the app to run
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Data generation library for fake data
+  faker: ^2.2.0
+
+  # State management solution
+  scoped_model: ^2.0.0
+
+  # Swipe actions for list items
+  flutter_slidable: ^4.0.3
+
+  # Image selection from device gallery/camera
+  image_picker: ^1.2.1
+
+  # Share files and content with other apps
+  share_plus: ^8.0.0
+
+  # Local database - NoSQL storage solution
+  sembast: ^3.8.6
+
+  # Access device file system paths
+  path_provider: ^2.1.5
+
+  # Launch URLs and make phone calls
+  url_launcher: ^6.3.2
+
+  # Custom Google Fonts integration
+  google_fonts: ^6.2.1
+
+  # Shimmer loading animation effect
+  shimmer: ^3.0.0
+
+  # Material Design icons
+  cupertino_icons: ^1.0.8
+
+  # File picker for import/export
+  file_picker: ^8.0.0+1
+
+  # CSV file handling
+  csv: ^6.0.0
+
+  # File permissions handling
+  permission_handler: ^11.3.1
+
+# Development-only dependencies - used during development and testing
+dev_dependencies:
+  # Flutter testing framework
+  flutter_test:
+    sdk: flutter
+
+  # Lint rules for code quality
+  flutter_lints: ^6.0.0
+
+# Flutter-specific configuration
+flutter:
+  # Enable Material Design icons
+  uses-material-design: true
+
+  assets:
+    - lib/ui/splash/spash_screen_picture/splash_photo.png
+
+  # Custom fonts (commented out - uncomment if adding fonts)
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
