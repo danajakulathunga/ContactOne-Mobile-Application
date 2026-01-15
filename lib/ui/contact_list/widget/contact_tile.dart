@@ -51,12 +51,12 @@ String _formatPhoneNumber(String phoneNumber) {
 
   if (cleaned.isEmpty) return phoneNumber;
 
-  // If it starts with +, handle international format
-  if (cleaned.startsWith('+')) {
-    final countryCode = cleaned.substring(0, 3); // e.g., +94
+  // If it starts with +94, handle international format (+94 000 000 000)
+  if (cleaned.startsWith('+94')) {
+    final countryCode = '+94';
     final remainingDigits = cleaned.substring(3);
 
-    // Format remaining digits in groups of 3, but keep the last group flexible
+    // Format as groups of 3 digits
     final parts = <String>[];
     for (int i = 0; i < remainingDigits.length; i += 3) {
       final end =
@@ -67,7 +67,24 @@ String _formatPhoneNumber(String phoneNumber) {
     return '$countryCode ${parts.join(' ')}';
   }
 
-  // For local numbers, format in groups of 3
+  // For local numbers starting with 0, format as (070 0000 000)
+  if (cleaned.startsWith('0')) {
+    // Format as 3-4-3 digit groups
+    if (cleaned.length >= 3) {
+      final part1 = cleaned.substring(0, 3); // 3 digits
+      final remaining = cleaned.substring(3);
+
+      if (remaining.length >= 4) {
+        final part2 = remaining.substring(0, 4); // 4 digits
+        final part3 = remaining.substring(4); // remaining digits
+        return '$part1 $part2 $part3';
+      } else {
+        return '$part1 $remaining';
+      }
+    }
+  }
+
+  // Fallback: For other numbers, format in groups of 3
   final parts = <String>[];
   for (int i = 0; i < cleaned.length; i += 3) {
     final end = (i + 3 <= cleaned.length) ? i + 3 : cleaned.length;
