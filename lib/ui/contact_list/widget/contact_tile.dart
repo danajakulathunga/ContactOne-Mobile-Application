@@ -1,4 +1,5 @@
 import 'package:contacts_app/data/contact.dart';
+import 'package:contacts_app/data/services/image_storage_service.dart';
 import 'package:contacts_app/ui/contact/contact_edit_page.dart';
 import 'package:contacts_app/ui/model/contact_model.dart';
 import 'package:flutter/material.dart';
@@ -548,7 +549,11 @@ class ContactTile extends StatelessWidget {
   }
 
   Widget _buildCircleAvatarContent(Contact displayedContact) {
-    if (displayedContact.imageFile == null) {
+    // Check if image file exists before attempting to display it
+    final hasValidImage = displayedContact.imageFile != null &&
+        ImageStorageService.imageFileExists(displayedContact.imageFile!.path);
+
+    if (!hasValidImage) {
       return Center(
         child: Text(
           displayedContact.name.isNotEmpty

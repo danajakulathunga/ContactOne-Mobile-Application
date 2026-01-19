@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:contacts_app/data/services/image_storage_service.dart';
 
 /// A full-screen preview widget for contact profile pictures.
 ///
@@ -16,12 +17,14 @@ class ProfilePicturePreview extends StatefulWidget {
   final File? imageFile;
   final String contactName;
   final Function(File?) onImageChanged;
+  final int? contactId;
 
   const ProfilePicturePreview({
     super.key,
     required this.imageFile,
     required this.contactName,
     required this.onImageChanged,
+    this.contactId,
   });
 
   @override
@@ -36,6 +39,8 @@ class _ProfilePicturePreviewState extends State<ProfilePicturePreview> {
   /// Captures a photo from the device camera and updates the profile picture.
   ///
   /// Applies a max width of 600 pixels for optimized file size.
+  /// Copies the captured image to persistent storage to prevent deletion
+  /// by system cache cleanup.
   /// Closes the preview screen after successful capture.
   Future<void> _pickFromCamera() async {
     try {
@@ -44,8 +49,18 @@ class _ProfilePicturePreviewState extends State<ProfilePicturePreview> {
         maxWidth: 600,
       );
       if (pickedFile != null) {
-        widget.onImageChanged(File(pickedFile.path));
-        if (mounted) Navigator.pop(context);
+        // Save the picked image to persistent storage
+        final persistedImageFile = await ImageStorageService.saveContactImage(
+          File(pickedFile.path),
+          contactId: widget.contactId,
+        );
+
+        if (persistedImageFile != null) {
+          widget.onImageChanged(persistedImageFile);
+          if (mounted) Navigator.pop(context);
+        } else {
+          _showError('Failed to save image to device storage');
+        }
       }
     } catch (e) {
       _showError('Failed to capture image');
@@ -55,6 +70,8 @@ class _ProfilePicturePreviewState extends State<ProfilePicturePreview> {
   /// Selects a photo from the device gallery and updates the profile picture.
   ///
   /// Applies a max width of 600 pixels for optimized file size.
+  /// Copies the selected image to persistent storage to prevent deletion
+  /// by system cache cleanup.
   /// Closes the preview screen after successful selection.
   Future<void> _pickFromGallery() async {
     try {
@@ -63,8 +80,18 @@ class _ProfilePicturePreviewState extends State<ProfilePicturePreview> {
         maxWidth: 600,
       );
       if (pickedFile != null) {
-        widget.onImageChanged(File(pickedFile.path));
-        if (mounted) Navigator.pop(context);
+        // Save the picked image to persistent storage
+        final persistedImageFile = await ImageStorageService.saveContactImage(
+          File(pickedFile.path),
+          contactId: widget.contactId,
+        );
+
+        if (persistedImageFile != null) {
+          widget.onImageChanged(persistedImageFile);
+          if (mounted) Navigator.pop(context);
+        } else {
+          _showError('Failed to save image to device storage');
+        }
       }
     } catch (e) {
       _showError('Failed to pick image');
@@ -215,7 +242,8 @@ class _ProfilePicturePreviewState extends State<ProfilePicturePreview> {
       backgroundColor: Colors.black,
       // Display the image in the center with fallback placeholder
       body: Center(
-        child: widget.imageFile != null
+        child: widget.imageFile != null &&
+                ImageStorageService.imageFileExists(widget.imageFile!.path)
             ? Image.file(
                 widget.imageFile!,
                 fit: BoxFit.contain,
