@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:contacts_app/data/contact.dart';
+import 'package:contacts_app/data/services/image_storage_service.dart';
 import 'package:contacts_app/ui/model/contact_model.dart';
 import 'package:contacts_app/ui/contact/widget/profile_picture_preview.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,9 @@ class _ContactFormState extends State<ContactForm> {
   bool _isSubmitting = false;
 
   bool get isEditMode => widget.editedContact != null;
-  bool get hasSelectedCustomImage => _contactImageFile != null;
+  bool get hasSelectedCustomImage =>
+      _contactImageFile != null &&
+      ImageStorageService.imageFileExists(_contactImageFile!.path);
 
   @override
   void initState() {
@@ -340,7 +343,11 @@ class _ContactFormState extends State<ContactForm> {
 
   Widget _buildEditModeCircleAvatarContent(double size) {
     if (isEditMode) {
-      if (_contactImageFile != null) {
+      // Check if image file exists before attempting to display it
+      final hasValidImage = _contactImageFile != null &&
+          ImageStorageService.imageFileExists(_contactImageFile!.path);
+
+      if (hasValidImage) {
         return Image.file(_contactImageFile!, fit: BoxFit.cover);
       }
       return Center(
@@ -358,7 +365,11 @@ class _ContactFormState extends State<ContactForm> {
         ),
       );
     } else {
-      if (_contactImageFile != null) {
+      // Check if image file exists before attempting to display it
+      final hasValidImage = _contactImageFile != null &&
+          ImageStorageService.imageFileExists(_contactImageFile!.path);
+
+      if (hasValidImage) {
         return Image.file(_contactImageFile!, fit: BoxFit.cover);
       }
       // For new contact with selected image
@@ -368,6 +379,7 @@ class _ContactFormState extends State<ContactForm> {
 
   void _onContactPictureTapped() async {
     final contactName = widget.editedContact?.name ?? _name ?? 'Contact';
+    final contactId = isEditMode ? widget.editedContact?.id : null;
 
     if (mounted) {
       final updatedImage = await Navigator.of(context).push<File?>(
@@ -375,6 +387,7 @@ class _ContactFormState extends State<ContactForm> {
           builder: (context) => ProfilePicturePreview(
             imageFile: _contactImageFile,
             contactName: contactName,
+            contactId: contactId,
             onImageChanged: (newImage) {
               // Update the image in this form
               setState(() => _contactImageFile = newImage);

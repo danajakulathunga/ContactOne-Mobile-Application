@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:contacts_app/data/contact.dart';
+import 'package:contacts_app/data/services/image_storage_service.dart';
 import 'package:contacts_app/ui/contact/contact_create_page.dart';
 import 'package:contacts_app/ui/contact_list/widget/contact_tile.dart';
 import 'package:contacts_app/ui/model/contact_model.dart';
@@ -1114,10 +1115,16 @@ class _DuplicatesDialog extends StatelessWidget {
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 24, vertical: 4),
                       leading: CircleAvatar(
-                        backgroundImage: contact.imageFile != null
+                        backgroundImage: contact.imageFile != null &&
+                                ImageStorageService.imageFileExists(
+                                  contact.imageFile!.path,
+                                )
                             ? FileImage(contact.imageFile!)
                             : null,
-                        child: contact.imageFile == null
+                        child: !(contact.imageFile != null &&
+                                ImageStorageService.imageFileExists(
+                                  contact.imageFile!.path,
+                                ))
                             ? Text(
                                 contact.name.isNotEmpty
                                     ? contact.name[0].toUpperCase()
